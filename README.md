@@ -1,5 +1,59 @@
-# Welcome to GitHub Desktop!
+# 西安交通大学计算机网络实验
 
-This is your README. READMEs are where you can communicate what your project is and how to use it.
+## 实现基于 HTTP 协议的客户端程序
 
-Write your name on line 6, save it, and then head back to GitHub Desktop.
+基于标准的 HTTP/1.1 协议，实现一个简单的 Web 客户端程序。
+
+### 基本要求
+
+1. 支持 GET、HEAD 和 POST 三种请求方法；
+2. 支持 URI 的 "%HEXHEX" 编码；
+3. 支持 Connection: Keep-Alive 和 Connection: Close 两种连接模式；
+4. 能够把一个网页中所有的内嵌对象一次全部获取；
+5. 支持 Cookie 的基本机制，实现典型的网站登录；
+6. 能够正确处理几种典型的应答，并支持重定向请求；
+7. 支持基本的缓存处理。
+
+### 进阶要求
+
+1. 支持 HTTPS；
+2. 支持分块传输编码、gzip 等内容编码；
+3. 支持基于 POST 方法的文件上传；
+4. 支持把一个网页中特定对象一次全部获取。
+
+### 测试要求
+
+1. 在本人的电脑运行 HTTP 客户端程序，测试网络中某个可用的 WWW 服务器；
+2. 在云服务器上搭建典型 WWW 服务器（如 Apache2），在本人电脑上运行客户端程序，测试各项功能。
+3. 测试中，要求在 HTTP 请求头中 User-Agent 域设置为作者的英文名字。
+
+## 实现基于 HTTP 协议的服务器程序
+
+基于标准的 HTTP/1.1 协议，实现一个简单的 Web 服务器程序。
+
+### 基本要求
+
+1. 支持 GET、HEAD 和 POST 三种请求方法；
+2. 支持 URI 的 "%HEXHEX" 编码；
+3. 正确给出应答；
+4. 支持 Connection: Keep-Alive 和 Connection: Close 两种连接模式。
+5. 可配置 Web 服务器的监听地址、监听端口和虚拟路径；
+6. 能够多线程处理并发的请求，或采取其他方法正确处理多个并发连接；
+7. 对于无法成功定位文件的请求，根据错误原因，作相应错误提示。支持一定的异常情况处理能力；
+8. 服务可以启动和关闭；
+9. 在服务器端的日志中记录每一个请求。
+
+### 进阶要求
+
+1. 支持 HTTPS；
+2. 支持分块传输编码；
+3. 支持 gzip 等内容编码；
+4. 支持 Cookie 基本机制，实现典型的网站登录；
+5. 支持基本的缓存处理；
+6. 支持基于 POST 方法的文件上传。
+7. 支持 CGI。
+
+### 测试要求
+
+1. 在云服务器上搭建你的 WWW 服务器，在本人的电脑运行浏览器，测试你的 WWW 服务器的各项功能。
+2. 测试中，要求在 HTTP 应答头中 Server 域设置为作者的英文名字。
