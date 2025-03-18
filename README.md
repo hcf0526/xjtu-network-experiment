@@ -57,3 +57,55 @@
 
 1. 在云服务器上搭建你的 WWW 服务器，在本人的电脑运行浏览器，测试你的 WWW 服务器的各项功能。
 2. 测试中，要求在 HTTP 应答头中 Server 域设置为作者的英文名字。
+
+# socket 模块
+
+## 创建 socket 对象
+
+```python
+self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+```
+
+参数：
+
+- `socket.AF_INET`：使用 IPv4 协议。
+- `socket.SOCK_STREAM`：使用 TCP 协议。
+
+# HTTP 协议
+
+## 请求方法
+
+### GET 方法
+
+GET 请求报文的格式为
+
+```http request
+GET / HTTP/1.1
+Host: www.xjtu.edu.cn
+User-Agent: Chen Huang
+Connection: Keep-Alive
+```
+
+GET 的资源路径, 开头不带 `.` . 若为文件类型, 则末尾不带 `/` ; 若为文件夹类型, 则末尾带 `/` . 若末尾不带 `/` 且请求的为文件夹类型, 则服务器会自动重定向到末尾带 `/` 的路径。
+
+### 未支持方法
+
+若 www.xjtu.edu.cn 接受到了未支持的请求方法, 则返回
+
+```http request
+HTTP/1.1 405 Method Not Allowed
+Date: EEE, dd MMM yyyy HH:mm:ss z
+Server: **********
+X-Frame-Options: SAMEORIGIN
+Allow:
+Content-Length: 220
+Content-Type: text/html; charset=iso-8859-1
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>405 Method Not Allowed</title>
+</head><body>
+<h1>Method Not Allowed</h1>
+<p>The requested method GAP is not allowed for this URL.</p>
+</body></html>
+```

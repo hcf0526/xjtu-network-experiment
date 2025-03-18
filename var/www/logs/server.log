@@ -1,0 +1,4 @@
+[2025-03-18 16:34:24 INFO] Server started at 127.0.0.1:12345
+[2025-03-18 16:34:35 INFO] Connected to ('127.0.0.1', 58774)
+[2025-03-18 16:34:42 INFO] Received request from 127.0.0.1: 
+GET / HTTP/1.1

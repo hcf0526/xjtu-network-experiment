@@ -1,0 +1,5 @@
+{
+  "start": "Server started at {host}:{port}",
+  "connect": "Connected to {address}",
+  "request": "Received request from {address}: "
+}
