@@ -7,7 +7,7 @@
 ### 基本要求
 
 1. 支持 GET、HEAD 和 POST 三种请求方法；
-2. 支持 URI 的 "%HEXHEX" 编码；
+2. 支持 URL 的 "%HEXHEX" 编码；
 3. 支持 Connection: Keep-Alive 和 Connection: Close 两种连接模式；
 4. 能够把一个网页中所有的内嵌对象一次全部获取；
 5. 支持 Cookie 的基本机制，实现典型的网站登录；
@@ -34,7 +34,7 @@
 ### 基本要求
 
 1. 支持 GET、HEAD 和 POST 三种请求方法；
-2. 支持 URI 的 "%HEXHEX" 编码；
+2. 支持 URL 的 "%HEXHEX" 编码；
 3. 正确给出应答；
 4. 支持 Connection: Keep-Alive 和 Connection: Close 两种连接模式。
 5. 可配置 Web 服务器的监听地址、监听端口和虚拟路径；
@@ -86,26 +86,16 @@ User-Agent: Chen Huang
 Connection: Keep-Alive
 ```
 
-GET 的资源路径, 开头不带 `.` . 若为文件类型, 则末尾不带 `/` ; 若为文件夹类型, 则末尾带 `/` . 若末尾不带 `/` 且请求的为文件夹类型, 则服务器会自动重定向到末尾带 `/` 的路径。
+GET 请求行的资源路径, 开头必须为 `/`, 且遵顼 URL 编码规则.
+
+协议版本支持 HTTP/1.0, HTTP/1.1, HTTP/2, HTTP/3.
+
+若资源路径不存在, 则返回 `404 Not Found`.
 
 ### 未支持方法
 
-若 www.xjtu.edu.cn 接受到了未支持的请求方法, 则返回
+若服务器接受到了未支持的请求方法, 则返回 `405 Method Not Allowed`.
 
-```http request
-HTTP/1.1 405 Method Not Allowed
-Date: EEE, dd MMM yyyy HH:mm:ss z
-Server: **********
-X-Frame-Options: SAMEORIGIN
-Allow:
-Content-Length: 220
-Content-Type: text/html; charset=iso-8859-1
+## URL 编码
 
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<html><head>
-<title>405 Method Not Allowed</title>
-</head><body>
-<h1>Method Not Allowed</h1>
-<p>The requested method GAP is not allowed for this URL.</p>
-</body></html>
-```
+字符 0-9, a-z, A-Z, -, _, ., ~, ?, /, #, :, @, =, & 不需要编码, 其他字符采用 %HEXHEX 编码, 即百分号后跟两位十六进制数表示字符的 ASCII 码.
