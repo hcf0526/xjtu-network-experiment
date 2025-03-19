@@ -1,5 +1,7 @@
 {
-  "200": "HTTP/1.1 200 OK",
-  "404": "HTTP/1.1 404 Not Found",
-  "405": "HTTP/1.1 405 Method Not Allowed"
+  "200": "OK",
+  "400": "Bad Request",
+  "403": "Forbidden",
+  "404": "Not Found",
+  "405": "Method Not Allowed"
 }

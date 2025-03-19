@@ -1,7 +1,15 @@
-[2025-03-18 21:01:34 INFO] Server started at 127.0.0.1:12345
-[2025-03-18 21:01:48 INFO] Connected to ('127.0.0.1', 61344)
-[2025-03-18 21:01:48 INFO] Received request from 127.0.0.1: 
-GET /images/image01.png HTTP/1.1
-[2025-03-18 21:02:15 INFO] Connected to ('127.0.0.1', 61376)
-[2025-03-18 21:02:16 INFO] Received request from 127.0.0.1: 
-GET /images/image01.png HTTP/1.1
+[2025-03-19 23:06:59 INFO] Server started at 127.0.0.1:12345
+[2025-03-19 23:07:01 INFO] Connected to ('127.0.0.1', 51683)
+[2025-03-19 23:07:01 INFO] Received request from ('127.0.0.1', 51683): 
+POST /upload/ HTTP/1.1
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello, World</title>
+</head>
+<body>
+
+</body>
+</html>
