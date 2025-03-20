@@ -58,23 +58,6 @@
 1. 在云服务器上搭建你的 WWW 服务器，在本人的电脑运行浏览器，测试你的 WWW 服务器的各项功能。
 2. 测试中，要求在 HTTP 应答头中 Server 域设置为作者的英文名字。
 
-# RFC 2396 标准
-
-https://www.ietf.org/rfc/rfc2396.txt
-
-# socket 模块
-
-## 创建 socket 对象
-
-```python
-self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-```
-
-参数：
-
-- `socket.AF_INET`：使用 IPv4 协议。
-- `socket.SOCK_STREAM`：使用 TCP 协议。
-
 # HTTP 协议
 
 ## 请求方法
@@ -125,3 +108,25 @@ RFC 2396 中规定了 URI 中保留的字符:
 > escaped = "%" hex hex 
 > hex = digit | "A" | "B" | "C" | "D" | "E" | "F" | "a" | "b" | "c" | "d" | "e" | "f"
 > This encoding ensures that characters outside the unreserved set or disallowed characters are safely represented in a URI.
+
+## 字段
+
+### Host 字段
+
+Host 字段用于指定服务器的主机名和端口号. 本实验中, 要求 Host 字段必须为服务器地址.
+
+### User-Agent 字段
+
+User-Agent 字段用于指定客户端的名称. 本实验中, 不强制要求 User-Agent 字段.
+
+### Connection 字段
+
+Connection 字段用于指定连接模式. 本实验中, 支持 Keep-Alive 和 Close 两种连接模式. Keep-Alive 表示收到请求后仍保持连接, Close 表示收到请求后关闭连接.
+
+### Content-Type 字段
+
+Content-Type 字段用于指定请求体的类型. 本实验中, 内容类型的请求格式为 `prefix/type`. 服务端会根据 Content-Type 字段的值, 选择不同的处理方式, 如改变文件的后缀.
+
+# RFC 2396 标准
+
+https://www.ietf.org/rfc/rfc2396.txt

@@ -12,7 +12,7 @@ class Log:
 
   def write(self, message, log_type):
     timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    log_entry = f"[{timestamp} {log_type}] {message}\n"
+    log_entry = f"[{timestamp} {log_type}] {message}\r\n"
     self.file.write(log_entry)
     self.file.flush()
 

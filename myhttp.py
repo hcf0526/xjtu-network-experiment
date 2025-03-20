@@ -9,9 +9,10 @@ class MyHttp:
   FORBIDDEN = "403"
   NOT_FOUND = "404"
   METHOD_NOT_ALLOWED = "405"
+  REQUEST_TIMEOUT = "408"
 
   METHODS = ('GET', 'HEAD', 'POST')
-  FIELDS = ('Host', )
+  FIELDS = ('Host', 'User-Agent', 'Connection', 'Content-Type')
 
   @staticmethod
   def url_encode(url):
@@ -34,9 +35,13 @@ class MyHttpRequest(MyHttp):
     self.path = None
     self.actual_path = None
     self.version = None
-    self.host = None
     self.fields = None
     self.body = None
+    # 字段
+    self.host = None
+    self.user_agent = None
+    self.connection = None
+    self.content_type = None
 
   def __str__(self):
     info = f"Method: {self.method}\n"
@@ -53,7 +58,6 @@ class MyHttpRequest(MyHttp):
     if not request:
       return False
     lines = request.splitlines(keepends=True)
-    print(lines)
 
     # 处理请求行
     try:
@@ -75,6 +79,8 @@ class MyHttpRequest(MyHttp):
     for (number, line) in enumerate(lines[1:], start=1):
       if line == b'\r\n':
         break
+      if number == len(lines) - 1:
+        return False
       try:
         line = line.decode('utf-8')
       except UnicodeDecodeError:
@@ -93,11 +99,10 @@ class MyHttpRequest(MyHttp):
 
     for field in self.FIELDS:
       if field in fields:
-        setattr(self, field.lower(), fields[field])
+        setattr(self, field.replace('-', '_').lower(), fields[field])
 
     if number != len(lines) - 1:
-      self.body = b''.join(lines[number + 1: len(lines)])
-    # print(f"{self.method=}, {self.path=}, {self.version=}, {self.host=}, {self.fields=}")
+      self.body = b''.join(lines[number + 1:])
 
     return True
 
@@ -107,20 +112,29 @@ class MyHttpResponse(MyHttp):
   fields = None
   body = None
   def __init__(self, status):
-    self.version = "HTTP/1.1"
+    self.version = 'HTTP/1.1'
     self.status = status
-    self.fields = { }
+    self.fields = { 'Server': 'Chen Huang' }
     self.body = None
+
+  def __str__(self):
+    info = f"Version: {self.version}\n"
+    info += f"Status: {self.status}\n"
+    info += f"Fields: {self.fields}\n"
+    info += f"Body: {self.body}\n"
+    return info
 
   def __call__(self, *args, **kwargs):
     return self.generate()
 
   def generate(self) -> bytes:
     response = f'{self.version} {self.status} {LANG.HTTP[self.status]}\r\n'
+    for field in self.fields:
+      response += f'{field}: {self.fields[field]}\r\n'
+    response += '\r\n'
     response = response.encode('utf-8')
     if self.body is None:
       return response
-    response += b'\r\n'
     response += self.body
     return response
 

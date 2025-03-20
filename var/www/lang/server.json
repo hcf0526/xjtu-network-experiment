@@ -1,5 +1,7 @@
 {
   "start": "Server started at {host}:{port}",
   "connect": "Connected to {addr}",
-  "receive": "Received request from {addr}: "
+  "receive": "Received request from {addr}: ",
+  "stop": "Server is stopping...",
+  "stopped": "Server stopped"
 }

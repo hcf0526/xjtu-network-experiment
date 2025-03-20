@@ -1,0 +1,18 @@
+{
+  "type": {
+    ".txt": "text/plain",
+    ".html": "text/html",
+    ".jpeg": "image/jpeg",
+    ".png": "image/png"
+  },
+
+  "text": {
+    "plain": ".txt",
+    "html": ".html"
+  },
+  "image": {
+    "jpeg": ".jpeg",
+    "png": ".png"
+  }
+
+}
