@@ -1,6 +1,5 @@
 import os
 import socket
-from idlelib.rpc import request_queue
 
 from lang import Lang
 from log import Log
@@ -17,8 +16,9 @@ class Server:
     self.server_socket = None
     self.virtual_path = {
       '/': './var/www/experiment/html/index.html',
-      '/images/': './var/www/experiment/html/images/',
-      '/upload/': './var/www/experiment/upload/',
+      '/favicon.ico': './var/www/experiment/html/ico/white128.ico',
+      '/upload': './var/www/experiment/html/upload/',
+      '/images': './var/www/experiment/html/images/',
     }
     self.max_connections = 5
     self.thread_pool = ThreadPoolExecutor(max_workers=self.max_connections)
@@ -40,7 +40,7 @@ class Server:
       self.server_socket.close()
 
   def thread_execute(self, client_socket):
-    client_socket.settimeout(5)
+    client_socket.settimeout(30)
     result = True
     while result:
       result = self.handle_request(client_socket)
@@ -48,7 +48,7 @@ class Server:
 
   def handle_request(self, client_socket):
     try:
-      request_data = client_socket.recv(1024)
+      request_data = client_socket.recv(2048)
     except socket.timeout:
       response = MyHttpResponse(MyHttp.REQUEST_TIMEOUT)
       client_socket.send(response.generate())
@@ -64,18 +64,21 @@ class Server:
     if not result:
       response = MyHttpResponse(MyHttp.BAD_REQUEST)
       client_socket.send(response.generate())
+      print(response)
       return True
 
     request = self.virtual_path_mapping(request)
     if not request:
       response = MyHttpResponse(MyHttp.FORBIDDEN)
       client_socket.send(response.generate())
+      print(response)
       return True
 
     result = self.fields_check(request)
     if result != MyHttp.OK:
       response = MyHttpResponse(result)
       client_socket.send(response.generate())
+      print(response)
       return True
 
     match request.method:
@@ -101,8 +104,8 @@ class Server:
     path = MyHttp.url_decode(request.path)
     slash = path.find('/', 1)
     if slash == -1:
-      slash = len(path) - 1
-    path_map = self.virtual_path.get(path[:slash + 1], '')
+      slash = len(path)
+    path_map = self.virtual_path.get(path[:slash], '')
     if path_map == '':
       return None
     request.actual_path = path_map + path[slash + 1:]
@@ -148,7 +151,7 @@ class Server:
     return response
 
   def handle_post_request(self, client_socket, request: MyHttpRequest):
-    if not request.path.startswith('/upload/'):
+    if not request.path.startswith('/upload'):
       return MyHttpResponse(MyHttp.FORBIDDEN)
     if request.path.count('/') > 2:
       return MyHttpResponse(MyHttp.FORBIDDEN)

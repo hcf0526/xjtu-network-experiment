@@ -1,6 +1,7 @@
-[2025-03-20 16:30:01 INFO] Server started at 127.0.0.1:12345
-[2025-03-20 16:30:02 INFO] Connected to ('127.0.0.1', 53027)
-[2025-03-20 16:30:02 INFO] Received request from ('127.0.0.1', 53027): 
+[2025-04-02 23:07:13 INFO] Server started at 127.0.0.1:12345
+[2025-04-02 23:07:17 INFO] Connected to ('127.0.0.1', 55635)
+[2025-04-02 23:07:17 INFO] Connected to ('127.0.0.1', 55636)
+[2025-04-02 23:07:17 INFO] Received request from ('127.0.0.1', 55635): 
 GET / HTTP/1.1
 Host: 127.0.0.1:12345
 Connection: keep-alive
@@ -11,7 +12,7 @@ sec-ch-ua-platform: "Windows"
 Upgrade-Insecure-Requests: 1
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36 Edg/133.0.0.0
 Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
-Sec-Fetch-Site: cross-site
+Sec-Fetch-Site: none
 Sec-Fetch-Mode: navigate
 Sec-Fetch-User: ?1
 Sec-Fetch-Dest: document
@@ -19,7 +20,24 @@ Accept-Encoding: gzip, deflate, br, zstd
 Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
 
 
-[2025-03-20 16:30:02 INFO] Received request from ('127.0.0.1', 53027): 
+[2025-04-02 23:07:17 INFO] Received request from ('127.0.0.1', 55635): 
+GET /images/image01.png HTTP/1.1
+Host: 127.0.0.1:12345
+Connection: keep-alive
+sec-ch-ua-platform: "Windows"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36 Edg/133.0.0.0
+sec-ch-ua: "Not(A:Brand";v="99", "Microsoft Edge";v="133", "Chromium";v="133"
+sec-ch-ua-mobile: ?0
+Accept: image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: no-cors
+Sec-Fetch-Dest: image
+Referer: http://127.0.0.1:12345/
+Accept-Encoding: gzip, deflate, br, zstd
+Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
+
+
+[2025-04-02 23:07:17 INFO] Received request from ('127.0.0.1', 55635): 
 GET /favicon.ico HTTP/1.1
 Host: 127.0.0.1:12345
 Connection: keep-alive
@@ -31,6 +49,158 @@ Accept: image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8
 Sec-Fetch-Site: same-origin
 Sec-Fetch-Mode: no-cors
 Sec-Fetch-Dest: image
+Referer: http://127.0.0.1:12345/
+Accept-Encoding: gzip, deflate, br, zstd
+Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
+
+
+[2025-04-02 23:07:34 INFO] Connected to ('127.0.0.1', 55657)
+[2025-04-02 23:07:34 INFO] Received request from ('127.0.0.1', 55657): 
+POST /upload HTTP/1.1
+Host: 127.0.0.1:12345
+Connection: keep-alive
+Content-Length: 678874
+sec-ch-ua-platform: "Windows"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36 Edg/133.0.0.0
+sec-ch-ua: "Not(A:Brand";v="99", "Microsoft Edge";v="133", "Chromium";v="133"
+Content-Type: image/png
+X-Filename: file.png
+sec-ch-ua-mobile: ?0
+Accept: */*
+Origin: http://127.0.0.1:12345
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: cors
+Sec-Fetch-Dest: empty
+Referer: http://127.0.0.1:12345/
+Accept-Encoding: gzip, deflate, br, zstd
+Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
+
+
+[2025-04-02 23:07:34 INFO] Connected to ('127.0.0.1', 55658)
+[2025-04-02 23:07:34 INFO] Connected to ('127.0.0.1', 55659)
+[2025-04-02 23:07:34 INFO] Received request from ('127.0.0.1', 55658): 
+GET / HTTP/1.1
+Host: 127.0.0.1:12345
+Connection: keep-alive
+Cache-Control: max-age=0
+sec-ch-ua: "Not(A:Brand";v="99", "Microsoft Edge";v="133", "Chromium";v="133"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "Windows"
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36 Edg/133.0.0.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br, zstd
+Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
+
+
+[2025-04-02 23:07:34 INFO] Received request from ('127.0.0.1', 55658): 
+GET /images/image01.png HTTP/1.1
+Host: 127.0.0.1:12345
+Connection: keep-alive
+sec-ch-ua-platform: "Windows"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36 Edg/133.0.0.0
+sec-ch-ua: "Not(A:Brand";v="99", "Microsoft Edge";v="133", "Chromium";v="133"
+sec-ch-ua-mobile: ?0
+Accept: image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: no-cors
+Sec-Fetch-Dest: image
+Referer: http://127.0.0.1:12345/
+Accept-Encoding: gzip, deflate, br, zstd
+Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
+
+
+[2025-04-02 23:07:35 INFO] Received request from ('127.0.0.1', 55658): 
+GET /favicon.ico HTTP/1.1
+Host: 127.0.0.1:12345
+Connection: keep-alive
+sec-ch-ua-platform: "Windows"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36 Edg/133.0.0.0
+sec-ch-ua: "Not(A:Brand";v="99", "Microsoft Edge";v="133", "Chromium";v="133"
+sec-ch-ua-mobile: ?0
+Accept: image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: no-cors
+Sec-Fetch-Dest: image
+Referer: http://127.0.0.1:12345/
+Accept-Encoding: gzip, deflate, br, zstd
+Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
+
+
+[2025-04-02 23:07:50 INFO] Received request from ('127.0.0.1', 55658): 
+POST /upload HTTP/1.1
+Host: 127.0.0.1:12345
+Connection: keep-alive
+Content-Length: 678874
+sec-ch-ua-platform: "Windows"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36 Edg/133.0.0.0
+sec-ch-ua: "Not(A:Brand";v="99", "Microsoft Edge";v="133", "Chromium";v="133"
+Content-Type: image/png
+X-Filename: file.png
+sec-ch-ua-mobile: ?0
+Accept: */*
+Origin: http://127.0.0.1:12345
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: cors
+Sec-Fetch-Dest: empty
+Referer: http://127.0.0.1:12345/
+Accept-Encoding: gzip, deflate, br, zstd
+Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
+
+
+[2025-04-02 23:07:50 INFO] Connected to ('127.0.0.1', 55668)
+[2025-04-02 23:08:23 INFO] Connected to ('127.0.0.1', 55699)
+[2025-04-02 23:08:23 INFO] Received request from ('127.0.0.1', 55699): 
+POST /upload HTTP/1.1
+Host: 127.0.0.1:12345
+Connection: keep-alive
+Content-Length: 130
+sec-ch-ua-platform: "Windows"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36 Edg/133.0.0.0
+sec-ch-ua: "Not(A:Brand";v="99", "Microsoft Edge";v="133", "Chromium";v="133"
+Content-Type: text/plain
+X-Filename: file.txt
+sec-ch-ua-mobile: ?0
+Accept: */*
+Origin: http://127.0.0.1:12345
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: cors
+Sec-Fetch-Dest: empty
+Referer: http://127.0.0.1:12345/
+Accept-Encoding: gzip, deflate, br, zstd
+Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello, World</title>
+</head>
+<body>
+
+</body>
+</html>
+[2025-04-02 23:08:30 INFO] Connected to ('127.0.0.1', 55714)
+[2025-04-02 23:08:30 INFO] Received request from ('127.0.0.1', 55714): 
+POST /upload HTTP/1.1
+Host: 127.0.0.1:12345
+Connection: keep-alive
+Content-Length: 678874
+sec-ch-ua-platform: "Windows"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36 Edg/133.0.0.0
+sec-ch-ua: "Not(A:Brand";v="99", "Microsoft Edge";v="133", "Chromium";v="133"
+Content-Type: image/png
+X-Filename: file.png
+sec-ch-ua-mobile: ?0
+Accept: */*
+Origin: http://127.0.0.1:12345
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: cors
+Sec-Fetch-Dest: empty
 Referer: http://127.0.0.1:12345/
 Accept-Encoding: gzip, deflate, br, zstd
 Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6

@@ -121,7 +121,8 @@ class MyHttpResponse(MyHttp):
     info = f"Version: {self.version}\n"
     info += f"Status: {self.status}\n"
     info += f"Fields: {self.fields}\n"
-    info += f"Body: {self.body}\n"
+    if self.body:
+      info += f"Body: {self.body[:256]}\n"
     return info
 
   def __call__(self, *args, **kwargs):
