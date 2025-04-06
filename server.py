@@ -3,6 +3,7 @@ import socket
 
 from lang import Lang
 from log import Log
+import threading
 from concurrent.futures import ThreadPoolExecutor
 from myhttp import MyHttp, MyHttpRequest, MyHttpResponse
 
@@ -11,6 +12,7 @@ log = Log('var/www/logs/server.log')
 
 class Server:
   def __init__(self, host, port):
+    self.flag = False
     self.host = host
     self.port = port
     self.server_socket = None
@@ -21,64 +23,85 @@ class Server:
       '/images': './var/www/experiment/html/images/',
     }
     self.max_connections = 5
-    self.thread_pool = ThreadPoolExecutor(max_workers=self.max_connections)
+    self.thread_listening = threading.Thread(target=self.listening)
+    self.thread_client_sockets = ThreadPoolExecutor(max_workers=self.max_connections)
+    self.DEBUG = True
 
   def start(self):
+    self.flag = True
     self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     self.server_socket.bind((self.host, self.port))
     self.server_socket.listen(self.max_connections)
+    self.server_socket.setblocking(False)  # 非阻塞模式
+    self.thread_listening.start()
     log.info(LANG.SERVER["start"].format(host=self.host, port=self.port))
 
-    try:
-      while True:
-        client_socket, client_address = self.server_socket.accept()
-        log.info(LANG.SERVER["connect"].format(addr=client_address))
-        self.thread_pool.submit(self.thread_execute, client_socket)
-    except KeyboardInterrupt:
-      log.info(LANG.SERVER["stop"])
-    finally:
-      self.server_socket.close()
+  def stop(self):
+    self.flag = False
 
-  def thread_execute(self, client_socket):
-    client_socket.settimeout(30)
+  def run(self):
+    while True:
+      command = input()
+      match command:
+        case 'start':
+          if not self.flag:
+            self.start()
+        case 'stop':
+          if self.flag:
+            self.stop()
+        case 'exit':
+          if self.flag:
+            self.stop()
+          self.server_socket.close()
+          break
+
+  def listening(self):
+    while self.flag:
+      try:
+        client_socket, client_address = self.server_socket.accept()
+      except BlockingIOError:
+        continue
+      client_socket.settimeout(30)
+      client_socket.setblocking(False)
+      self.thread_client_sockets.submit(self.execute, client_socket)
+      log.info(LANG.SERVER["connect"].format(addr=client_address))
+
+  def execute(self, client_socket):
     result = True
-    while result:
-      result = self.handle_request(client_socket)
+    while result and self.flag:
+      try:
+        request_data = client_socket.recv(2048)
+      except BlockingIOError:
+        continue
+      except socket.timeout:
+        response = MyHttpResponse(MyHttp.REQUEST_TIMEOUT)
+        client_socket.send(response.generate())
+        break
+      log.info(LANG.SERVER["receive"].format(addr=client_socket.getpeername())
+                 + '\r\n' + request_data.decode('utf-8', errors='backslashreplace'))
+      result = self.handle_request(client_socket, request_data)
     client_socket.close()
 
-  def handle_request(self, client_socket):
-    try:
-      request_data = client_socket.recv(2048)
-    except socket.timeout:
-      response = MyHttpResponse(MyHttp.REQUEST_TIMEOUT)
-      client_socket.send(response.generate())
-      return False
-    if not request_data:
-      return True
-    log.info(LANG.SERVER["receive"].format(addr=client_socket.getpeername())
-             + '\r\n' + request_data.decode('utf-8', errors='backslashreplace'))
-
+  def handle_request(self, client_socket, request_data):
     request = MyHttpRequest()
     result = request.parse(request_data)
-    print(request)
+    if self.DEBUG:
+      print(request)
     if not result:
       response = MyHttpResponse(MyHttp.BAD_REQUEST)
       client_socket.send(response.generate())
-      print(response)
       return True
 
     request = self.virtual_path_mapping(request)
     if not request:
       response = MyHttpResponse(MyHttp.FORBIDDEN)
       client_socket.send(response.generate())
-      print(response)
       return True
 
     result = self.fields_check(request)
     if result != MyHttp.OK:
       response = MyHttpResponse(result)
       client_socket.send(response.generate())
-      print(response)
       return True
 
     match request.method:
@@ -91,7 +114,8 @@ class Server:
       case _:
         response = MyHttpResponse(MyHttp.METHOD_NOT_ALLOWED)
 
-    print(response)
+    if self.DEBUG:
+      print(response)
     client_socket.send(response.generate())
 
     if request.connection and request.connection.lower() == 'Close':
@@ -167,7 +191,7 @@ class Server:
 
 def main():
   server = Server('127.0.0.1', 12345)
-  server.start()
+  server.run()
 
 if __name__ == '__main__':
   main()
