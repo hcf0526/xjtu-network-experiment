@@ -52,7 +52,7 @@
         // 上传文件
         confirmBtn.addEventListener('click', () => {
             if (selectedFile) {
-                alert(`上传文件: ${selectedFile.name}\n`);
+                alert(`已上传文件: ${selectedFile.name}`);
 
                 // 1. 根据文件名或类型判断 Content-Type
                 let contentType = 'application/octet-stream'; // 默认二进制流

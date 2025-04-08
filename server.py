@@ -1,8 +1,9 @@
 import os
+import gzip
 import socket
 
-from lang import Lang
 from log import Log
+from lang import Lang
 import threading
 from concurrent.futures import ThreadPoolExecutor
 from myhttp import MyHttp, MyHttpRequest, MyHttpResponse
@@ -34,10 +35,16 @@ class Server:
     self.server_socket.listen(self.max_connections)
     self.server_socket.setblocking(False)  # 非阻塞模式
     self.thread_listening.start()
+    print(LANG.SERVER["start"].format(host=self.host, port=self.port))
     log.info(LANG.SERVER["start"].format(host=self.host, port=self.port))
 
   def stop(self):
+    print(LANG.SERVER["stop"])
+    log.info(LANG.SERVER["stop"])
     self.flag = False
+    print(LANG.SERVER["stopped"])
+    log.info(LANG.SERVER["stopped"])
+
 
   def run(self):
     while True:
@@ -70,7 +77,7 @@ class Server:
     result = True
     while result and self.flag:
       try:
-        request_data = client_socket.recv(2048)
+        request_data = client_socket.recv(1024 * 1024)
       except BlockingIOError:
         continue
       except socket.timeout:
@@ -78,7 +85,7 @@ class Server:
         client_socket.send(response.generate())
         break
       log.info(LANG.SERVER["receive"].format(addr=client_socket.getpeername())
-                 + '\r\n' + request_data.decode('utf-8', errors='backslashreplace'))
+                 + '\r\n' + request_data[: 1024].decode('utf-8', errors='backslashreplace'))
       result = self.handle_request(client_socket, request_data)
     client_socket.close()
 
@@ -91,16 +98,16 @@ class Server:
       response = MyHttpResponse(MyHttp.BAD_REQUEST)
       client_socket.send(response.generate())
       return True
-
-    request = self.virtual_path_mapping(request)
-    if not request:
-      response = MyHttpResponse(MyHttp.FORBIDDEN)
-      client_socket.send(response.generate())
-      return True
-
+    # 检查请求字段
     result = self.fields_check(request)
     if result != MyHttp.OK:
       response = MyHttpResponse(result)
+      client_socket.send(response.generate())
+      return True
+    # 虚拟路径映射
+    request = self.virtual_path_mapping(request)
+    if not request:
+      response = MyHttpResponse(MyHttp.FORBIDDEN)
       client_socket.send(response.generate())
       return True
 
@@ -118,10 +125,20 @@ class Server:
       print(response)
     client_socket.send(response.generate())
 
-    if request.connection and request.connection.lower() == 'Close':
+    if request.connection and request.connection.lower() == 'close':
       return False
 
     return True
+
+  def fields_check(self, request: MyHttpRequest):
+    if request.host is None:
+      # 缺少 Host 字段
+      return MyHttp.BAD_REQUEST
+    if request.host not in (f'{self.host}', f'{self.host}:{self.port}'):
+      # Host 字段不匹配
+      return MyHttp.FORBIDDEN
+
+    return MyHttp.OK
 
   def virtual_path_mapping(self, request):
     # 虚拟路径映射
@@ -134,16 +151,6 @@ class Server:
       return None
     request.actual_path = path_map + path[slash + 1:]
     return request
-
-  def fields_check(self, request: MyHttpRequest):
-    if request.host is None:
-      # 缺少 Host 字段
-      return MyHttp.BAD_REQUEST
-    if request.host not in (f'{self.host}', f'{self.host}:{self.port}'):
-      # Host 字段不匹配
-      return MyHttp.FORBIDDEN
-
-    return MyHttp.OK
 
   def content_type_parse(self, request: MyHttpRequest):
     if request.content_type is None:
@@ -161,6 +168,11 @@ class Server:
     response = self.handle_head_request(request)
     with open(request.actual_path, 'rb') as file:
       file = file.read()
+      # gzip 压缩
+      if 'gzip' in request.accept_encoding:
+        file = gzip.compress(file)
+        response.fields['Content-Length'] = len(file)
+        response.fields['Content-Encoding'] = 'gzip'
       response.body = file
     return response
 
@@ -185,13 +197,18 @@ class Server:
     suffix = self.content_type_parse(request)
     if suffix is None:
       return MyHttpResponse(MyHttp.BAD_REQUEST)
+    # gzip 解压缩
+    if request.content_encoding.contains('gzip'):
+      request.body = gzip.decompress(request.body)
     with open(request.actual_path + address + f'/{address}{suffix}', 'wb') as file:
       file.write(request.body)
     return MyHttpResponse(MyHttp.OK)
 
 def main():
   server = Server('127.0.0.1', 12345)
-  server.run()
+  server.start()
+  while True:
+    pass
 
 if __name__ == '__main__':
   main()

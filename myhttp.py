@@ -12,7 +12,7 @@ class MyHttp:
   REQUEST_TIMEOUT = "408"
 
   METHODS = ('GET', 'HEAD', 'POST')
-  FIELDS = ('Host', 'User-Agent', 'Connection', 'Content-Type')
+  FIELDS = ('Host', 'User-Agent', 'Connection', 'Content-Type', 'Content-Encoding', 'Accept-Encoding')
 
   @staticmethod
   def url_encode(url):
@@ -42,6 +42,8 @@ class MyHttpRequest(MyHttp):
     self.user_agent = None
     self.connection = None
     self.content_type = None
+    self.content_encoding = None
+    self.accept_encoding = None
 
   def __str__(self):
     info = f"Method: {self.method}\n"
