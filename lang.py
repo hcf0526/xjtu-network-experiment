@@ -5,9 +5,9 @@ class Lang:
   HTTP = None
   TYPE = None
   def __init__(self):
-    with open('./var/www/lang/server.json', 'r') as file:
+    with open('lang/server.json', 'r') as file:
       self.SERVER = json.load(file)
-    with open('./var/www/lang/http.json', 'r') as file:
+    with open('lang/http.json', 'r') as file:
       self.HTTP = json.load(file)
-    with open('./var/www/lang/type.json', 'r') as file:
+    with open('lang/type.json', 'r') as file:
       self.TYPE = json.load(file)

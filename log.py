@@ -1,5 +1,14 @@
 import datetime
 
+def truncate(text, max_len=1024):
+  if not isinstance(text, bytes):
+    return None
+  byte_size = len(text)
+  if len(text) <= max_len:
+    return text
+
+  truncated = text[:max_len] + f"\n[...{byte_size} Bytes Total]".encode('utf-8')
+  return truncated
 
 class Log:
   def __init__(self, log_file='log.log'):

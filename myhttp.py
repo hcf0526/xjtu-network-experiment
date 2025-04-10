@@ -1,7 +1,12 @@
 import re
+from log import truncate
 from lang import Lang
 
 LANG = Lang()
+RED = '\033[31m'
+YELLOW = '\033[33m'
+BLUE = '\033[34m'
+RESET = '\033[0m'
 
 class MyHttp:
   OK = "200"
@@ -15,12 +20,6 @@ class MyHttp:
   FIELDS = ('Host', 'User-Agent', 'Connection', 'Content-Type', 'Content-Encoding', 'Accept-Encoding')
 
   @staticmethod
-  def url_encode(url):
-    """
-    For Chen Wenxuan to do.
-    """
-    pass
-  @staticmethod
   def url_decode(url):
     def repl(match):
       hex_value = match.group(1)
@@ -31,6 +30,7 @@ class MyHttp:
 
 class MyHttpRequest(MyHttp):
   def __init__(self):
+    self.success = False
     self.method = None
     self.path = None
     self.actual_path = None
@@ -46,11 +46,12 @@ class MyHttpRequest(MyHttp):
     self.accept_encoding = None
 
   def __str__(self):
-    info = f"Method: {self.method}\n"
+    info = f'{RED}Request: {RESET}\n'
+    info += f"Method: {self.method}\n"
     info += f"Path: {self.path}\n"
     info += f"Version: {self.version}\n"
     info += f"Fields: {self.fields}\n"
-    info += f"Body: {self.body}\n"
+    info += f"Body: {truncate(self.body, 64)}\n"
     return info
 
   def __repr__(self):
@@ -58,22 +59,22 @@ class MyHttpRequest(MyHttp):
 
   def parse(self, request: bytes):
     if not request:
-      return False
+      return MyHttp.BAD_REQUEST
     lines = request.splitlines(keepends=True)
 
     # 处理请求行
     try:
       header = lines[0].decode('utf-8')
     except UnicodeDecodeError:
-      return False
+      return MyHttp.BAD_REQUEST
     header = header.rstrip('\r\n').split()
     if len(header) != 3:
-      return False
+      return MyHttp.BAD_REQUEST
     method, path, version = header
     if not path.startswith('/'):
-      return False
+      return MyHttp.BAD_REQUEST
     if not version.startswith('HTTP/'):
-      return False
+      return MyHttp.BAD_REQUEST
 
     # 处理请求头
     number = 0
@@ -82,13 +83,13 @@ class MyHttpRequest(MyHttp):
       if line == b'\r\n':
         break
       if number == len(lines) - 1:
-        return False
+        return MyHttp.BAD_REQUEST
       try:
         line = line.decode('utf-8')
       except UnicodeDecodeError:
-        return False
+        return MyHttp.BAD_REQUEST
       if ':' not in line:
-        return False
+        return MyHttp.BAD_REQUEST
       k, v = line.split(':', 1)
       (k, v) = (k.strip(), v.strip())
       fields[k] = v
@@ -106,7 +107,8 @@ class MyHttpRequest(MyHttp):
     if number != len(lines) - 1:
       self.body = b''.join(lines[number + 1:])
 
-    return True
+    self.success = True
+    return MyHttp.OK
 
 class MyHttpResponse(MyHttp):
   version = None
@@ -120,11 +122,11 @@ class MyHttpResponse(MyHttp):
     self.body = None
 
   def __str__(self):
-    info = f"Version: {self.version}\n"
+    info = f'{BLUE}Response: {RESET}\n'
+    info += f"Version: {self.version}\n"
     info += f"Status: {self.status}\n"
     info += f"Fields: {self.fields}\n"
-    if self.body:
-      info += f"Body: {self.body[:256]}\n"
+    info += f"Body: {truncate(self.body, 64)}\n"
     return info
 
   def __call__(self, *args, **kwargs):

@@ -1,0 +1,78 @@
+[2025-04-10 17:02:57 INFO] Server started at 10.172.72.235:12345
+[2025-04-10 17:03:13 INFO] Received request from ('10.172.18.67', 50653): 
+GET / HTTP/1.1
+Host: 10.172.72.235
+User-Agent: SimplePythonHTTPClient/1.0
+Connection: close
+
+
+[2025-04-10 17:03:13 INFO] Connected to ('10.172.18.67', 50653)
+[2025-04-10 17:05:04 INFO] Connected to ('10.172.18.67', 50721)
+[2025-04-10 17:05:04 INFO] Received request from ('10.172.18.67', 50721): 
+GET / HTTP/1.1
+Host: 10.172.72.235
+User-Agent: chen wen xuan
+Accept: */*
+Accept-Encoding: gzip, deflate
+Connection: Keep-Alive
+
+
+[2025-04-10 17:05:14 INFO] Received request from ('10.172.18.67', 50721): 
+
+[2025-04-10 17:05:21 INFO] Connected to ('10.172.18.67', 50723)
+[2025-04-10 17:05:21 INFO] Received request from ('10.172.18.67', 50723): 
+GET / HTTP/1.1
+Host: 10.172.72.235
+User-Agent: chen wen xuan
+Accept: */*
+Accept-Encoding: gzip, deflate
+Connection: Keep-Alive
+
+
+[2025-04-10 17:05:31 INFO] Received request from ('10.172.18.67', 50723): 
+
+[2025-04-10 17:06:34 INFO] Connected to ('10.172.18.67', 50774)
+[2025-04-10 17:06:34 INFO] Received request from ('10.172.18.67', 50774): 
+GET / HTTP/1.1
+Host: 10.172.72.235
+User-Agent: chen wen xuan
+
+
+[2025-04-10 17:08:15 INFO] Connected to ('10.172.18.67', 50831)
+[2025-04-10 17:08:15 INFO] Received request from ('10.172.18.67', 50831): 
+GET / HTTP/1.1
+Host: 10.172.72.235
+Connection: close
+User-Agent: chen wen xuan
+
+
+[2025-04-10 17:16:51 INFO] Connected to ('10.172.18.67', 51149)
+[2025-04-10 17:16:51 INFO] Received request from ('10.172.18.67', 51149): 
+GET / HTTP/1.1
+Host: 10.172.72.235
+User-Agent: chen wen xuan
+Accept: */*
+Accept-Encoding: gzip, deflate
+Connection: Close
+
+
+[2025-04-10 17:16:52 INFO] Received request from ('10.172.18.67', 51150): 
+GET / HTTP/1.1
+Host: 10.172.72.235
+User-Agent: chen wen xuan
+Accept: */*
+Accept-Encoding: gzip, deflate
+Connection: Close
+
+
+[2025-04-10 17:16:52 INFO] Connected to ('10.172.18.67', 51150)
+[2025-04-10 17:16:52 INFO] Connected to ('10.172.18.67', 51151)
+[2025-04-10 17:16:52 INFO] Received request from ('10.172.18.67', 51151): 
+GET /images/image01.png HTTP/1.1
+Host: 10.172.72.235
+User-Agent: chen wen xuan
+Accept: */*
+Accept-Encoding: gzip, deflate
+Connection: Close
+
+

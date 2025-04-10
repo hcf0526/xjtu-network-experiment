@@ -12,4 +12,4 @@ def create_text_file(filename, size_kb=60):
   print(f"已生成 {os.path.getsize(filename) / 1024:.1f}KB 的文本文件: {filename}")
 
 
-create_text_file('text05.txt', 663)
+create_text_file('text05.txt', 30 * 1024)

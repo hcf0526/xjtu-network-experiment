@@ -1,0 +1,20 @@
+{
+  "type": {
+    ".txt": "text/plain",
+    ".html": "text/html",
+    ".jpeg": "image/jpeg",
+    ".png": "image/png",
+    ".ico": "image/x-icon"
+  },
+
+  "text": {
+    "plain": ".txt",
+    "html": ".html"
+  },
+  "image": {
+    "jpeg": ".jpeg",
+    "png": ".png",
+    "ico": ".ico"
+  }
+
+}
