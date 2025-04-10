@@ -63,26 +63,23 @@ class Server:
     client_socket.close()
 
   def handle_request(self, client_socket):
+    request = MyHttpRequest()
     request_data = self.recv_no_blocking(client_socket)
     if request_data is None:
       return False
-
-    message = LANG.SERVER["request"].format(addr=client_socket.getpeername())
-    message += '\n'
-    try:
-      message += truncate(request_data).decode('utf-8', errors='backslashreplace')
-    except Exception as e:
-      print(e)
-    log.info(message)
-
-    request = MyHttpRequest()
+    log.info(LANG.SERVER["request"].format(addr=client_socket.getpeername()) + '\n' +
+             truncate(request_data).decode('utf-8', errors='backslashreplace'))
     result = request.parse(request_data)
-    self.debug_info(request)
-
     if result != MyHttp.OK:
       response = MyHttpResponse(result)
       client_socket.send(response.generate())
       return True
+    while not request.completeness:
+      request_data = self.recv_no_blocking(client_socket)
+      log.info(LANG.SERVER["request"].format(addr=client_socket.getpeername()) + '\n' +
+               truncate(request_data).decode('utf-8', errors='backslashreplace'))
+      request.extend(request_data)
+    self.debug_info(request)
     # 检查请求字段
     result = self.fields_check(request)
     if result != MyHttp.OK:
@@ -119,10 +116,10 @@ class Server:
     with open(request.actual_path, 'rb') as file:
       file = file.read()
       # gzip 压缩
-      # if 'gzip' in request.accept_encoding:
-      #   file = gzip.compress(file)
-      #   response.fields['Content-Length'] = len(file)
-      #   response.fields['Content-Encoding'] = 'gzip'
+      if 'gzip' in request.accept_encoding:
+        file = gzip.compress(file)
+        response.fields['Content-Length'] = len(file)
+        response.fields['Content-Encoding'] = 'gzip'
       response.body = file
     return response
 
@@ -144,16 +141,16 @@ class Server:
       return MyHttpResponse(MyHttp.FORBIDDEN)
     # 路径创建
     address = client_socket.getpeername()[0]
-    if not os.path.exists(request.actual_path + address):
-      os.makedirs(request.actual_path + address)
+    if not os.path.exists(request.actual_path + '/' + address):
+      os.makedirs(request.actual_path +  '/' + address)
     # 文件类型解析
     suffix = self.content_type_parse(request)
     if suffix is None:
       return MyHttpResponse(MyHttp.BAD_REQUEST)
     # gzip 解压缩
-    if request.content_encoding.contains('gzip'):
+    if request.content_encoding and request.content_encoding.contains('gzip'):
       request.body = gzip.decompress(request.body)
-    with open(request.actual_path + address + f'/{address}{suffix}', 'wb') as file:
+    with open(request.actual_path + '/' + address + f'/{address}{suffix}', 'wb') as file:
       file.write(request.body)
     return MyHttpResponse(MyHttp.OK)
 
@@ -161,7 +158,7 @@ class Server:
     request_data = None
     while self.flag:
       try:
-        request_data = client_socket.recv(1024 * 1024)
+        request_data = client_socket.recv(1024)
       except BlockingIOError:
         continue
       except socket.timeout:
@@ -192,7 +189,7 @@ class Server:
       request.actual_path = self.virtual_path + '/ico/white128.ico'
       return MyHttp.OK
     actual_path = self.virtual_path + path
-    if os.path.exists(actual_path) and os.path.isfile(actual_path):
+    if os.path.exists(actual_path):
       request.actual_path = actual_path
       return MyHttp.OK
     return MyHttp.FORBIDDEN
@@ -209,6 +206,9 @@ class Server:
       return None
     return LANG.TYPE[prefix][suffix]
 
+  def decode_chunked(self, client_socket, request: MyHttpRequest):
+    pass
+
   def debug_info(self, info):
     if isinstance(info, MyHttpRequest):
       if not info.success:
@@ -218,7 +218,7 @@ class Server:
 
 
 def main():
-  server = Server('10.172.72.235', 12345)
+  server = Server('127.0.0.1', 12345)
   server.start()
   while True:
     pass

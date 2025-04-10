@@ -17,7 +17,7 @@ class MyHttp:
   REQUEST_TIMEOUT = "408"
 
   METHODS = ('GET', 'HEAD', 'POST')
-  FIELDS = ('Host', 'User-Agent', 'Connection', 'Content-Type', 'Content-Encoding', 'Accept-Encoding')
+  FIELDS = ('Host', 'User-Agent', 'Connection', 'Content-Length', 'Content-Type', 'Content-Encoding', 'Accept-Encoding', 'Transfer-Encoding')
 
   @staticmethod
   def url_decode(url):
@@ -31,19 +31,23 @@ class MyHttp:
 class MyHttpRequest(MyHttp):
   def __init__(self):
     self.success = False
+    self.completeness = False
     self.method = None
     self.path = None
     self.actual_path = None
     self.version = None
     self.fields = None
-    self.body = None
+    self.body = b''
+    self.buffer = bytearray(b'')
     # 字段
     self.host = None
     self.user_agent = None
     self.connection = None
+    self.content_length = None
     self.content_type = None
     self.content_encoding = None
     self.accept_encoding = None
+    self.transfer_encoding = None
 
   def __str__(self):
     info = f'{RED}Request: {RESET}\n'
@@ -51,7 +55,7 @@ class MyHttpRequest(MyHttp):
     info += f"Path: {self.path}\n"
     info += f"Version: {self.version}\n"
     info += f"Fields: {self.fields}\n"
-    info += f"Body: {truncate(self.body, 64)}\n"
+    info += f"Body: {truncate(self.body, 256)}\n"
     return info
 
   def __repr__(self):
@@ -104,11 +108,85 @@ class MyHttpRequest(MyHttp):
       if field in fields:
         setattr(self, field.replace('-', '_').lower(), fields[field])
 
+    if self.method == 'GET' or self.method == 'HEAD':
+      self.completeness = True
+
     if number != len(lines) - 1:
-      self.body = b''.join(lines[number + 1:])
+      self.extend(b''.join(lines[number + 1:]))
 
     self.success = True
     return MyHttp.OK
+
+  def extend(self, extend_body: bytes):
+    self.buffer.extend(extend_body)
+    try:
+      if not (self.transfer_encoding and self.transfer_encoding.lower() == 'chunked'):
+        # 未设置Content
+        if self.content_length is None:
+          return True
+
+        remaining = int(self.content_length) - len(self.body)
+        if remaining <= 0:
+          self.completeness = True
+          return False
+
+        chunk = self.buffer[:remaining]
+        self.body += chunk
+        self.buffer = self.buffer[remaining:]
+
+        if len(self.body) >= int(self.content_length):
+          self.completeness = True
+          self.buffer.clear()
+          return False
+
+        return True
+
+      data = self.buffer
+      pos = 0
+      total_length = len(data)
+
+      while pos < total_length:
+        line_end = data.find(b'\r\n', pos)
+        if line_end == -1:
+          self.buffer = data[pos:]
+          return True
+
+        size_line = data[pos:line_end]
+        if b';' in size_line:
+          size_part = size_line.split(b';')[0]
+        else:
+          size_part = size_line
+
+        try:
+          chunk_size = int(size_part, 16)
+        except ValueError:
+          return False
+
+        if chunk_size == 0:
+          if line_end + 4 > total_length or data[line_end:line_end + 4] != b'0\r\n\r\n':
+            self.buffer = data[pos:]
+            return True
+          self.buffer.clear()
+          self.completeness = True
+          return False
+
+        chunk_start = line_end + 2
+        chunk_end = chunk_start + chunk_size
+        if chunk_end + 2 > total_length:
+          self.buffer = data[pos:]
+          return True
+
+        if data[chunk_end:chunk_end + 2] != b'\r\n':
+          return False
+
+        self.body += data[chunk_start:chunk_end]
+        pos = chunk_end + 2
+
+      self.buffer.clear()
+      return True
+    except Exception as e:
+      print(f"Error: {e}")
+
 
 class MyHttpResponse(MyHttp):
   version = None
@@ -126,7 +204,7 @@ class MyHttpResponse(MyHttp):
     info += f"Version: {self.version}\n"
     info += f"Status: {self.status}\n"
     info += f"Fields: {self.fields}\n"
-    info += f"Body: {truncate(self.body, 64)}\n"
+    info += f"Body: {truncate(self.body, 256)}\n"
     return info
 
   def __call__(self, *args, **kwargs):
