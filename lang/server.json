@@ -1,5 +1,7 @@
 {
   "start": "Server started at {host}:{port}",
+  "http_error": "HTTP connection not HTTPS connection",
+  "certificate_error": "Unknown certificate",
   "connect": "Connected to {addr}",
   "request": "Received request from {addr}: ",
   "stop": "Server is stopping...",

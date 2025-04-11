@@ -17,7 +17,8 @@ class MyHttp:
   REQUEST_TIMEOUT = "408"
 
   METHODS = ('GET', 'HEAD', 'POST')
-  FIELDS = ('Host', 'User-Agent', 'Connection', 'Content-Length', 'Content-Type', 'Content-Encoding', 'Accept-Encoding', 'Transfer-Encoding')
+  FIELDS = ('Host', 'User-Agent', 'Connection', 'Content-Length', 'Content-Type',
+            'Content-Encoding', 'Accept-Encoding', 'Transfer-Encoding', 'X-Filename')
 
   @staticmethod
   def url_decode(url):
@@ -30,6 +31,7 @@ class MyHttp:
 
 class MyHttpRequest(MyHttp):
   def __init__(self):
+
     self.success = False
     self.completeness = False
     self.method = None
@@ -48,6 +50,8 @@ class MyHttpRequest(MyHttp):
     self.content_encoding = None
     self.accept_encoding = None
     self.transfer_encoding = None
+    self.x_filename = None
+    self.cookies = {}
 
   def __str__(self):
     info = f'{RED}Request: {RESET}\n'

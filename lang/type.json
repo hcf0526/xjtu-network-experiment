@@ -8,13 +8,13 @@
   },
 
   "text": {
-    "plain": ".txt",
-    "html": ".html"
+    "plain": "txt",
+    "html": "html"
   },
   "image": {
-    "jpeg": ".jpeg",
-    "png": ".png",
-    "ico": ".ico"
+    "jpeg": "jpeg",
+    "png": "png",
+    "ico": "ico"
   }
 
 }
