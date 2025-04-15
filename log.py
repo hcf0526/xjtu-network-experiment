@@ -13,7 +13,7 @@ def truncate(text, max_len=1024):
 class Log:
   def __init__(self, log_file='log.log'):
     self.log_file = log_file
-    self.file = open(self.log_file, 'w', newline='\n')
+    self.file = open(self.log_file, 'w', encoding='utf-8', newline='\n')
 
   def __del__(self):
     if hasattr(self, 'file') and self.file:

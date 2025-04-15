@@ -1,11 +1,10 @@
+# server 127.0.0.1 12345 --virtual-path ./var/www/experiment/html
 import os
 import json
 import gzip
 import socket
 import ssl
 import time
-
-from sympy import expand
 
 from log import truncate, Log
 from lang import Lang
@@ -14,48 +13,49 @@ from concurrent.futures import ThreadPoolExecutor
 from myhttp import RED, RESET, MyHttp, MyHttpRequest, MyHttpResponse
 
 LANG = Lang()
-log = Log('logs/server.log')
+
 
 class Server:
-  def __init__(self, host, port):
+  def __init__(self, host, port, https=False, virtual_path='./var/www/experiment/html'):
     self.flag = False
     self.host = host
     self.port = port
+    self.https = https
     self.cache = {}
     self.server_socket = None
     self.context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
     self.context.load_cert_chain(certfile='pem/cert.pem', keyfile='pem/key.pem')
     self.virtual_path = './var/www/experiment/html'
+    self.log = Log(f'logs/server_{host}_{port}.log')
     self.max_connections = 5
     self.thread_listening = threading.Thread(target=self.listening)
     self.thread_client_sockets = ThreadPoolExecutor(max_workers=self.max_connections)
     self.debug = True
 
-  def start(self, https=False):
+  def start(self):
     self.flag = True
     raw_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    # raw_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     raw_socket.bind((self.host, self.port))
     raw_socket.listen(self.max_connections)
     raw_socket.setblocking(False)
-    if not https:
+    if not self.https:
       self.server_socket = raw_socket
     else:
       self.server_socket = self.context.wrap_socket(raw_socket, server_side=True)
 
     self.thread_listening.start()
     self.debug_info(LANG.SERVER["start"].format(host=self.host, port=self.port))
-    log.info(LANG.SERVER["start"].format(host=self.host, port=self.port))
+    self.log.info(LANG.SERVER["start"].format(host=self.host, port=self.port))
 
   def stop(self):
     self.debug_info(LANG.SERVER["stop"])
-    log.info(LANG.SERVER["stop"])
+    self.log.info(LANG.SERVER["stop"])
 
     self.flag = False
     self.thread_client_sockets.shutdown(wait=True)
 
     self.debug_info(LANG.SERVER["stopped"])
-    log.info(LANG.SERVER["stopped"])
+    self.log.info(LANG.SERVER["stopped"])
 
   def listening(self):
     while self.flag:
@@ -66,17 +66,17 @@ class Server:
       except ssl.SSLError as e:
         if 'HTTP_REQUEST' in str(e):
           self.debug_info(LANG.SERVER["http_error"])
-          log.info(LANG.SERVER["http_error"])
+          self.log.info(LANG.SERVER["http_error"])
         if 'ALERT_CERTIFICATE_UNKNOWN' in str(e):
           self.debug_info(LANG.SERVER["certificate_error"])
-          log.info(LANG.SERVER["certificate_error"])
+          self.log.info(LANG.SERVER["certificate_error"])
         continue
 
       client_socket.settimeout(30)
       client_socket.setblocking(False)
       self.thread_client_sockets.submit(self.execute, client_socket)
       self.debug_info(LANG.SERVER["connect"].format(addr=client_address))
-      log.info(LANG.SERVER["connect"].format(addr=client_address))
+      self.log.info(LANG.SERVER["connect"].format(addr=client_address))
 
   def execute(self, client_socket):
     result = True
@@ -90,7 +90,7 @@ class Server:
     request_data = self.recv_no_blocking(client_socket)
     if request_data is None:
       return False
-    log.info(LANG.SERVER["request"].format(addr=client_socket.getpeername()) + '\n' +
+    self.log.info(LANG.SERVER["request"].format(addr=client_socket.getpeername()) + '\n' +
              truncate(request_data).decode('utf-8', errors='backslashreplace'))
     result = request.parse(request_data)
     if result != MyHttp.OK:
@@ -99,7 +99,8 @@ class Server:
       return True
     while not request.completeness:
       request_data = self.recv_no_blocking(client_socket)
-      log.info(LANG.SERVER["request"].format(addr=client_socket.getpeername()) + '\n' +
+      self.debug_info(f"Receive {len(request_data)} bytes, total {len(request.body)} bytes")
+      self.log.info(LANG.SERVER["request"].format(addr=client_socket.getpeername()) + '\n' +
                truncate(request_data).decode('utf-8', errors='backslashreplace'))
       request.extend(request_data)
     self.debug_info(request)
@@ -349,11 +350,94 @@ class Server:
       print(info)
 
 
-def main():
-  server = Server('127.0.0.1', 443)
-  server.start(https=True)
-  while True:
-    pass
+servers = {}
 
-if __name__ == '__main__':
-  main()
+def parse_and_run_command(command_line):
+    tokens = command_line.strip().split()
+    if not tokens:
+        return
+
+    if tokens[0] != "server":
+        print("Unknown command. Commands should start with 'server'.")
+        return
+
+    if len(tokens) >= 3 and tokens[1] != "--stop" and tokens[1] != "-list" and tokens[1] != "-exit":
+        host = tokens[1]
+        try:
+            port = int(tokens[2])
+        except ValueError:
+            print("Port must be an integer.")
+            return
+
+        https = False
+        virtual_path = None
+        i = 3
+        while i < len(tokens):
+            if tokens[i] == "-https":
+                https = True
+                i += 1
+            elif tokens[i] == "--virtual-path":
+                if i + 1 < len(tokens):
+                    virtual_path = tokens[i + 1]
+                    i += 2
+                else:
+                    print("Missing value for --virtual-path.")
+                    return
+            else:
+                print(f"Unknown argument: {tokens[i]}")
+                return
+
+        if port in servers:
+            print(f"Port {port} is already running.")
+            return
+
+        server = Server(host, port, https, virtual_path)
+        thread = threading.Thread(target=server.start, daemon=True)
+        servers[port] = (server, thread)
+        thread.start()
+        print(f"Server started on port {port}")
+
+    elif len(tokens) == 3 and tokens[1] == "--stop":
+        try:
+            port = int(tokens[2])
+        except ValueError:
+            print("Usage: server --stop port")
+            return
+
+        if port not in servers:
+            print(f"No server running on port {port}")
+            return
+
+        server, thread = servers.pop(port)
+        server.stop()
+        print(f"Server on port {port} stopped.")
+
+    # 列出所有已启动 server
+    elif len(tokens) == 2 and tokens[1] == "-list":
+        if not servers:
+            print("No running servers.")
+        else:
+            print("Running servers on ports:")
+            for port in servers:
+                print(f"  - {port}")
+
+    # 停止所有 server 并退出
+    elif len(tokens) == 2 and tokens[1] == "-exit":
+        print("Stopping all servers and exiting.")
+        for port in list(servers.keys()):
+            server, thread = servers.pop(port)
+            server.stop()
+            print(f"Server on port {port} stopped.")
+        exit(0)
+
+    else:
+        print("Invalid command or arguments.")
+
+if __name__ == "__main__":
+  print("Server CLI. Type 'server -exit' to stop all servers and exit.")
+  while True:
+    try:
+      command_line = input("> ")
+      parse_and_run_command(command_line)
+    except KeyboardInterrupt:
+      print("\nUse 'server -exit' to stop all servers and exit.")

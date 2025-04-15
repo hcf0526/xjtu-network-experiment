@@ -36,7 +36,7 @@
         selectBtn.addEventListener('click', () => {
             const fileInput = document.createElement('input');
             fileInput.type = 'file';
-            fileInput.accept = '*/*'; // 可以限制文件类型，如 'image/*'
+            fileInput.accept = '*/*';
 
             fileInput.addEventListener('change', (e) => {
                 if (e.target.files.length > 0) {
