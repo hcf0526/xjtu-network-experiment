@@ -4,17 +4,24 @@
     ".html": "text/html",
     ".jpeg": "image/jpeg",
     ".png": "image/png",
-    ".ico": "image/x-icon"
+    ".ico": "image/x-icon",
+    ".js": "application/javascript",
+    ".css": "text/css"
   },
 
   "text": {
     "plain": "txt",
-    "html": "html"
+    "html": "html",
+    "css": "css"
   },
   "image": {
     "jpeg": "jpeg",
     "png": "png",
     "ico": "ico"
+  },
+  "application": {
+    "javascript": "js",
+    "x-www-form-urlencoded": "form"
   }
 
 }

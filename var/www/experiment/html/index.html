@@ -2,89 +2,46 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>Hello, World</title>
-    <style>
-    .file-upload {
-        margin: 20px 0;
-    }
-    #fileName {
-        margin: 0 10px;
-        color: #666;
-    }
-    button {
-        padding: 5px 15px;
-        cursor: pointer;
-    }
-    </style>
+    <title>计算机网络实验08</title>
+    <link rel="stylesheet" href="style.css"> <!-- 外部CSS -->
 </head>
 <body>
-    <h1>实验者：陈文轩、黄畅飞</h1>
+    <div class="container">
+        <h1>实验者：陈文轩、黄畅飞</h1>
 
-    <div class="file-upload">
-        <button id="selectBtn">选择</button>
-        <span id="fileName">未选择文件</span>
-        <button id="confirmBtn" disabled>确定</button>
+        <!-- 登录表单 -->
+        <div class="login-form">
+            <h2>登录</h2>
+            <input type="text" id="username" placeholder="请输入用户名">
+            <input type="password" id="password" placeholder="请输入密码">
+            <button id="loginBtn" disabled>登录</button>
+        </div>
+
+        <!-- 欢迎信息 -->
+        <div class="welcome" id="welcomeMessage" style="display: none;">
+            <h2 id="greeting"></h2>
+            <button id="logoutBtn">退出登录</button>
+        </div>
+
+        <!-- 文件上传部分 -->
+        <div class="file-upload">
+            <button id="selectBtn" disabled>选择文件</button> <!-- 初始时禁用 -->
+            <span id="fileName">未选择文件</span>
+            <button id="confirmBtn" disabled>确定上传</button>
+        </div>
+
+        <!-- 图片展示 -->
+        <div class="image-container">
+            <img src="images/image01.png" height="256" alt="实验图片">
+        </div>
+
+        <!-- 页脚 -->
+        <div class="footer">
+            <p>&copy; 2025 陈文轩、黄畅飞 | 所有权保留</p>
+        </div>
     </div>
 
-    <script>
-        const selectBtn = document.getElementById('selectBtn');
-        const fileName = document.getElementById('fileName');
-        const confirmBtn = document.getElementById('confirmBtn');
-        let selectedFile = null;
-
-        // 选择文件
-        selectBtn.addEventListener('click', () => {
-            const fileInput = document.createElement('input');
-            fileInput.type = 'file';
-            fileInput.accept = '*/*';
-
-            fileInput.addEventListener('change', (e) => {
-                if (e.target.files.length > 0) {
-                    selectedFile = e.target.files[0];
-                    fileName.textContent = selectedFile.name;
-                    confirmBtn.disabled = false;
-                }
-            });
-
-            fileInput.click();
-        });
-
-        // 上传文件
-        confirmBtn.addEventListener('click', () => {
-            if (selectedFile) {
-                alert(`已上传文件: ${selectedFile.name}`);
-
-                // 1. 根据文件名或类型判断 Content-Type
-                let contentType = 'application/octet-stream'; // 默认二进制流
-                const fileName = selectedFile.name.toLowerCase();
-
-                if (fileName.endsWith('.txt')) {
-                    contentType = 'text/plain'; // 纯文本
-                } else if (fileName.endsWith('.jpg') || fileName.endsWith('.jpeg')) {
-                    contentType = 'image/jpeg'; // JPEG 图片
-                } else if (fileName.endsWith('.png')) {
-                    contentType = 'image/png'; // PNG 图片
-                }
-
-                // 2. 使用 FileReader 读取文件二进制数据
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const fileData = e.target.result; // 获取 ArrayBuffer
-
-                    fetch('/upload', {
-                        method: 'POST',
-                        body: fileData,
-                        headers: {
-                            'Content-Type': contentType, // 动态设置 Content-Type
-                            'X-Filename': selectedFile.name, // 可选：传文件名
-                        },
-                    });
-                };
-                reader.readAsArrayBuffer(selectedFile); // 读取为二进制
-            }
-        });
-    </script>
-
-    <img src="/images/image01.png" height="256" alt="实验图片">
+    <!-- 外部JS -->
+    <script src="main.js"></script>
 </body>
 </html>

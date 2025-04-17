@@ -4,6 +4,8 @@
   "certificate_error": "Unknown certificate",
   "connect": "Connected to {addr}",
   "request": "Received request from {addr}: ",
+  "disconnect": "Disconnected from {addr}",
+  "timeout": "Connection timeout {addr}",
   "stop": "Server is stopping...",
   "stopped": "Server stopped"
 }

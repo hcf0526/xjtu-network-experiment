@@ -1,0 +1,90 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f7fc;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+.container {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    padding: 30px;
+    text-align: center;
+}
+h1 {
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+.login-form {
+    margin-bottom: 30px;
+}
+.login-form h2 {
+    color: #4CAF50;
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+input[type="text"]:focus, input[type="password"]:focus {
+    border-color: #4CAF50;
+    outline: none;
+}
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+}
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+.file-upload {
+    margin-top: 20px;
+    text-align: left;
+}
+.file-upload button {
+    background-color: #007BFF;
+    border-radius: 5px;
+    padding: 10px 20px;
+}
+.file-upload button:hover {
+    background-color: #0056b3;
+}
+.file-upload span {
+    color: #555;
+    font-size: 14px;
+}
+.file-upload button:disabled {
+    background-color: #ccc;
+}
+.footer {
+    margin-top: 20px;
+    font-size: 12px;
+    color: #888;
+}
+.image-container {
+    margin-top: 20px;
+}
+.image-container img {
+    max-width: 100%;
+    border-radius: 10px;
+}

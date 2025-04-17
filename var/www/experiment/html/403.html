@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>403 Forbidden - Access Denied</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+        .error-container {
+            max-width: 600px;
+            padding: 2rem;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #dc3545;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        .error-code {
+            background-color: #f1f1f1;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-family: monospace;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+        .home-link {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .home-link:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-code">HTTP 403 Forbidden</div>
+        <h1>Access Denied</h1>
+        <p>You don't have permission to access this resource on this server.</p>
+        <p>If you believe this is an error, please contact the website administrator.</p>
+        <a href="/" class="home-link">Return to Homepage</a>
+    </div>
+</body>
+</html>

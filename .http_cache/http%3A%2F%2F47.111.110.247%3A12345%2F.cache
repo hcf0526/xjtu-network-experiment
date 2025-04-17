@@ -1,0 +1,53 @@
+server: Chen Huang
+content-type: text/html
+content-encoding: gzip
+cache-control: max-age=0
+content-length: 736
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>计算机网络实验08</title>
+    <link rel="stylesheet" href="style.css"> <!-- 外部CSS -->
+</head>
+<body>
+    <div class="container">
+        <h1>实验者：陈文轩、黄畅飞</h1>
+
+        <!-- 登录表单 -->
+        <div class="login-form">
+            <h2>登录</h2>
+            <input type="text" id="username" placeholder="请输入用户名">
+            <input type="password" id="password" placeholder="请输入密码">
+            <button id="loginBtn" disabled>登录</button>
+        </div>
+
+        <!-- 欢迎信息 -->
+        <div class="welcome" id="welcomeMessage" style="display: none;">
+            <h2 id="greeting"></h2>
+            <button id="logoutBtn">退出登录</button>
+        </div>
+
+        <!-- 文件上传部分 -->
+        <div class="file-upload">
+            <button id="selectBtn" disabled>选择文件</button> <!-- 初始时禁用 -->
+            <span id="fileName">未选择文件</span>
+            <button id="confirmBtn" disabled>确定上传</button>
+        </div>
+
+        <!-- 图片展示 -->
+        <div class="image-container">
+            <img src="images/image01.png" height="256" alt="实验图片">
+        </div>
+
+        <!-- 页脚 -->
+        <div class="footer">
+            <p>&copy; 2025 陈文轩、黄畅飞 | 所有权保留</p>
+        </div>
+    </div>
+
+    <!-- 外部JS -->
+    <script src="main.js"></script>
+</body>
+</html>
