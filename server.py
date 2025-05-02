@@ -138,7 +138,7 @@ class Server:
       return True
     while not request.completeness:
       request_data = self.recv_no_blocking(client_socket)
-      self.debug_info(f"Receive {len(request_data)} bytes, total {len(request.body)} bytes")
+      # self.debug_info(f"Receive {len(request_data)} bytes, total {len(request.body)} bytes")
       self.log.info(LANG.SERVER["request"].format(addr=client_socket.getpeername()) + '\n' +
                truncate(request_data).decode('utf-8', errors='backslashreplace'))
       request.extend(request_data)
@@ -203,7 +203,7 @@ class Server:
 
   def handle_head_request(self, request: MyHttpRequest):
     if request.path.startswith('/check_login'):
-      return self.post_check_login(request), None
+      return self.head_check_login(request), None
     if not os.path.isfile(request.actual_path):
       return MyHttpResponse(MyHttp.NOT_FOUND), None
 
@@ -214,36 +214,37 @@ class Server:
     response.fields['Content-Type'] = content_type
     # 缓存
     cache_key = request.actual_path
-    if cache_key in self.cache:
-      if request.accept_encoding and 'gzip' in request.accept_encoding and self.cache[cache_key][3] == 'gzip':
-        response.fields['Content-Encoding'] = 'gzip'
-        content, _, _, _ = self.cache[cache_key]
-      elif (not request.accept_encoding) or (request.accept_encoding and 'gzip' not in request.accept_encoding and self.cache[cache_key][3] is None):
-        content, _, _, _ = self.cache[cache_key]
+    cached = self.cache.get(cache_key)
+    accepts_gzip = request.accept_encoding and 'gzip' in request.accept_encoding
+    if cached:
+      content, content_type, _, encoding = cached
+      if (accepts_gzip and encoding == 'gzip') or (not accepts_gzip and encoding is None):
+        if encoding == 'gzip':
+          response.fields['Content-Encoding'] = 'gzip'
+          self.debug_info(f"{RED}Cache hit for {cache_key}{RESET}")
+          self.log.info(f"Cache hit for {cache_key}")
       else:
+        # 缓存存在但编码不符合，重新读取和压缩
         with open(request.actual_path, 'rb') as f:
           content = f.read()
-          # gzip 压缩
-          if request.accept_encoding and 'gzip' in request.accept_encoding:
-            content = gzip.compress(content)
-            response.fields['Content-Encoding'] = 'gzip'
-          if response.fields.get('Content-Encoding') and 'gzip' in response.fields['Content-Encoding']:
-            self.cache[cache_key] = (content, response.fields['Content-Type'], time.time(), 'gzip')
-          else:
-            self.cache[cache_key] = (content, response.fields['Content-Type'], time.time(), None)
-      self.debug_info(f"{RED}Cache hit for {cache_key}{RESET}")
-      self.log.info(f"Cache hit for {cache_key}")
-    else:
-      with open(request.actual_path, 'rb') as f:
-        content = f.read()
-        # gzip 压缩
-        if request.accept_encoding and 'gzip' in request.accept_encoding:
+        if accepts_gzip:
           content = gzip.compress(content)
           response.fields['Content-Encoding'] = 'gzip'
-      if response.fields.get('Content-Encoding') and 'gzip' in response.fields['Content-Encoding']:
-        self.cache[cache_key] = (content, response.fields['Content-Type'], time.time(), 'gzip')
+          encoding = 'gzip'
+        else:
+          encoding = None
+        self.cache[cache_key] = (content, content_type, time.time(), encoding)
+    else:
+      # 未命中缓存，读取文件并压缩（如果需要）
+      with open(request.actual_path, 'rb') as f:
+        content = f.read()
+      if accepts_gzip:
+        content = gzip.compress(content)
+        response.fields['Content-Encoding'] = 'gzip'
+        encoding = 'gzip'
       else:
-        self.cache[cache_key] = (content, response.fields['Content-Type'], time.time(), None)
+        encoding = None
+      self.cache[cache_key] = (content, response.fields['Content-Type'], time.time(), encoding)
 
     response.fields['Cache-Control'] = f'max-age={self.cache_expire_seconds}'
 
@@ -264,6 +265,7 @@ class Server:
       return self.post_login(request)
     elif request.path.startswith('/logout'):
       return self.post_logout(request)
+    return None
 
   def post_upload(self, client_socket, request: MyHttpRequest):
     cookie = request.cookie
@@ -325,7 +327,7 @@ class Server:
     response.fields['Set-Cookie'] = f'session_id=; Max-Age=0; {option_http}'
     return response
 
-  def post_check_login(self, request: MyHttpRequest):
+  def head_check_login(self, request: MyHttpRequest):
     response = MyHttpResponse(MyHttp.OK)
     response.fields['Content-Type'] = 'application/json; charset=utf-8'
     if not request.cookie:
